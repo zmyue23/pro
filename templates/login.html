@@ -1,0 +1,144 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link rel="stylesheet" href="{% static 'boot/css/bootstrap.min.css' %}">
+    <script src="{% static 'boot/js/jquery-3.3.1.min.js' %}"></script>
+    <script src="{% static 'boot/js/bootstrap.min.js' %}"></script>
+    <script>
+        $(function () {
+            $("#code").click(function () {
+                $.ajax({
+                    url:"{% url 'index:code' %}",
+                    type:"post",
+                    data:{
+                        mobile:$("#mobile").val(),
+                        passw:$("#passw").val(),
+                    },
+                    sucess:function (data) {
+                        console.log(data)
+                    }
+                })
+            })
+        })
+        var count = 60;
+        function get_code(obj){
+            var mobile = $("#mobile").val()
+            if(mobile){
+                if(count == 0){
+                    obj.removeAttribute("disabled");
+                    obj.value = "免费获取验证码";
+                    count = 60;
+                    return;
+                }else{
+                    obj.setAttribute("disabled", true);
+                    obj.value = "已发送(" + count + ")";
+                    count--;
+                }
+                setTimeout(function () {
+                    get_code(obj)
+                }
+                , 1000)
+            }else{
+                alert('请输入手机号')
+            }
+        }
+        function lgn() {
+
+        }
+    {#    function check_username() {#}
+    {#    $.ajax({#}
+    {#        type: "post",#}
+    {#        url: "{% url 'power:check_user' %}",#}
+    {#        data: $("#loginForm").serialize(),#}
+    {#        success: function (data) {#}
+    {#            console.log(data.status);#}
+    {#            if (data.status === 1) {#}
+    {#                location.href = '{% url "index:index" %}'#}
+    {#            } else {#}
+    {#                alert(data.msg);#}
+    {#                location.reload()#}
+    {#            }#}
+    {#        }#}
+    {#    });#}
+    {##}
+    {#}#}
+     $(function () {
+         $("#b").click(function () {
+             $("#h").tab('show')
+         })
+     })
+    </script>
+</head>
+<body>
+<div align="center" style='background-color: #2b669a;height: 753px'>
+    <div style="height: 300px;width: 400px;background: url('{% static "img/timgVW54O9UR_2yFL60v.png" %}');float: left;margin: 245px 0 0 550px">
+        <div style="float: left;margin: 40px">
+            <ul class="nav nav-tabs ">
+                <li class="active"><a href="#o1" data-toggle="tab"><b>验证码登录</b></a></li>
+                <li><a href="#o2" id="h" data-toggle="tab"><b>密码登录</b></a></li>
+            </ul>
+            <div class="tab-content">
+                <div class="tab-pane active" id="o1">
+                    <form action="{% url 'index:check' %}" class="form-horizontal" method="post">
+                        {% csrf_token %}
+                        <div class="form-group">
+                            <label for="mobile" class="col-sm-3 col-md-3 col-lg-3 control-label">手机号</label>
+                            <div class="col-sm-9 col-md-9 col-lg-9">
+                                <input class="form-control" id="mobile" placeholder="手机号">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <span class="input-group-btn">
+                                <input type="button" id="code" onclick="get_code(this)" value="免费获取验证码" class="btn btn-success">
+                            </span>
+                        </div>
+                        <div class="form-group">
+                            <label for="passw" class="col-sm-3 col-md-3 col-lg-3 control-label">验证码</label>
+                            <div class="col-sm-9 col-md-9 col-lg-9">
+                                <input class="form-control" id="passw" placeholder="验证码" type="password">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <button class="btn btn-primary" onclick="lgn()">登录</button>
+                        </div>
+                    </form>
+                </div>
+                <div class="tab-pane" id="o2">
+                    <form id="loginForm" role="form" action="{% url 'power:check_user' %}" method="post" class="form-horizontal">
+                        {% csrf_token %}
+                        <div class="form-group">
+                        </div>
+                        <div class="form-group">
+                            <label for="mobile" class="col-sm-3 col-md-3 col-lg-3 control-label">手机号:</label>
+                            <div class="col-sm-9 col-md-9 col-lg-9">
+                                <input class="form-control" id="name" name="username" placeholder="手机号">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="basic-url" class="col-sm-3 col-md-3 col-lg-3 control-label">密码：</label>
+                            <div class="col-sm-9 col-md-9 col-lg-9">
+                                <input type="password" class="form-control" id="pwd" name="password" placeholder="密码">
+                            </div>
+                        </div>
+                        <br>
+                        <div class="form-group">
+                            <button type="submit" class="btn btn-success" id="loginButtonId" value="登录"
+                                   >登陆
+                            </button>
+                        </div>
+{#                        <div class="form-group">#}
+{#                            <button type="submit" class="btn btn-success" id="loginButtonId" value="登录"#}
+{#                                    onclick="check_username()">登陆#}
+{#                            </button>#}
+{#                        </div>#}
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

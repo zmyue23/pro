@@ -1,0 +1,145 @@
+<script>
+    $(function () {
+        $("#bannerTable").jqGrid({
+            url: "/ban/get_banner/",
+            datatype: 'json',
+            styleUI: "Bootstrap",
+            autowidth: true,
+            pager: "#bannerPagerNew",
+            rowNum: 2,
+            rowList: [2, 5, 10],
+            viewrecords: true,
+            cellEdit: true,
+            editurl: '/ban/edit_banner/',
+            colNames: ["ID", "描述", "上传时间", "是否显示", "图片", "操作"],
+            colModel: [
+                {name: "id"},
+                {name: "desc", editable: true},
+                {name: "date"},
+                {name: "status", editable: true,},
+                {name: "pic", formatter: function (cellvalue, options, rowObject) {
+                    console.log(cellvalue)
+                    return "<img style='height: 50px;width: 50px' src='/static/" + cellvalue + "'>";
+                    }
+                },
+                {
+                    name: "option", formatter: function (cellvalue, options, rowObject) {
+                        return "<button class=\"btn btn-warning\"  name='edit' onclick=\"edit(" + rowObject.id + ")\">" +
+                            "<span class=\"glyphicon glyphicon-edit\"></span> 修改" +
+                            "</button>" + '&nbsp&nbsp' +
+                            "<button class=\"btn btn-danger\"  name='del' onclick=\"del(" + rowObject.id + ")\">" +
+                            "<span class=\"glyphicon glyphicon-edit\"></span> 删除" +
+                            "</button>"
+                    }
+                },
+            ],
+        });
+
+        $("#save").click(function () {
+            let title = $("#upload_title").val();
+            let status = $("#upload_status").val();
+            let pic = $("#upload_pic")[0].files[0];
+            let formData = new FormData();
+            formData.append("title", title);
+            formData.append("status", status);
+            formData.append("pic", pic);
+
+            $.ajax({
+                url: "/ban/add_banner/",
+                type: "post",
+                data: formData,
+                processData: false,
+                contentType: false,
+                success: function (data) {
+                    console.log(data);
+                    // 判断添加是否成功  成功则刷新表格
+                    $('#bannerModal').modal('hide');
+                    $('#bannerTable').trigger("reloadGrid");
+                    if (data = "success") {
+                        // 刷新表格
+                        $("#bannerTable").trigger("reloadGrid");
+                    }
+                }
+            });
+        })
+    });
+
+    function edit(row_id) {
+        $("#bannerTable").jqGrid('editGridRow', row_id, {
+            height: 300,
+            reloadAfterSubmit: true,
+
+        })
+    }
+
+    function del(row_id) {
+        $("#bannerTable").jqGrid('delGridRow', row_id, {
+            reloadAfterSubmit: true
+        })
+    }
+</script>
+
+<div class="page-header">
+    <h2>轮播图管理</h2>
+</div>
+<ul class="nav nav-tabs ">
+    <li class="active"><a href="#"><b>轮播图信息</b></a></li>
+</ul>
+
+<div class="panel panel-default" style="padding: 40px">
+    <!-- jqgrid表格的容器 -->
+    <table id="bannerTable"></table>
+    <div class="alert alert-success" role="alert" id="addBannerMsg" style="display: none">
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span
+                aria-hidden="true">&times;</span></button>
+        <strong id="msgShow"></strong>
+    </div>
+    <div id="bannerPagerNew" style="width: auto;height: 50px"></div>
+    <button class="btn btn-primary" data-aa="@456" data-whatever="@123" id="btn" data-toggle="modal"
+            data-target="#bannerModal">添加
+    </button>
+</div>
+<body>
+<div class="modal fade" id="bannerModal" tabindex="-1" data-backdrop="false">
+    <div class="modal-dialog">
+        <div class="modal-content" style="width:750px">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal"><span>&times;</span></button>
+                <h4 class="modal-title">编辑用户信息</h4>
+            </div>
+            <div class="modal-body">
+                <form action="" id="bannerForm">
+                    <div class="modal-body form-horizontal">
+                        <div class="form-group ">
+                            <label class="col-sm-2 control-label">描述：</label>
+                            <div class="col-sm-10">
+                                <input type="text" name="title" id="upload_title" class="form-control"
+                                       placeholder="请输入图片标题">
+                            </div>
+                        </div>
+                        <div class="form-group ">
+                            <label class="col-sm-2 control-label">状态：</label>
+                            <div class="col-sm-10">
+                                <input type="text" name="status" id="upload_status" class="form-control"
+                                       placeholder="请选择文件状态">
+                            </div>
+                        </div>
+                        <div class="form-group ">
+                            <label class="col-sm-2 control-label">图片：</label>
+                            <div class="col-sm-10">
+                                <input type="file" name="pic" id="upload_pic" class="form-control" placeholder="">
+                            </div>
+                        </div>
+
+                    </div>
+                </form>
+            </div>
+            <!--模态页脚-->
+            <div class="modal-footer" id="modal_footer">
+                <button type="button" class="btn btn-primary" id="save">保存</button>
+                <button type="button" class="btn btn-warning" data-dismiss="modal">取消</button>
+            </div>
+        </div>
+    </div>
+</div>
+</body>

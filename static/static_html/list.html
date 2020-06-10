@@ -1,0 +1,63 @@
+<div id="centerLayout">
+<!-- 为 ECharts 准备一个具备大小（宽高）的 DOM   图标基于此容器生成 -->
+<div id="main" style="width: 800px;height:600px;"></div>
+
+<script type="text/javascript">
+
+    // 基于准备好的dom，初始化echarts实例
+    // 通过准备好的dom容器去生成一个echarts实例 myChart实例对象
+    var myChart = echarts.init(document.getElementById('main'));
+
+    // 指定图表的配置项和数据
+    var option = {
+        // 表格标题相关设置
+        title: {
+            text: '半年注册趋势折线图',
+        },
+        // 悬浮提示框
+        tooltip: {},
+        // 选项卡
+        legend: {
+            data: ['半年注册趋势']
+        },
+        // x轴数据
+        xAxis: {
+            data: [],
+        },
+        yAxis: {},
+        // 表格展示的参数
+        series: [{
+            name: '销量',
+            type: 'line',
+            data: [],
+        }]
+    };
+
+    // 使用刚指定的配置项和数据显示图表。
+    myChart.setOption(option);
+
+    //向后台发送ajax请求来获取数据
+    $.ajax({
+        url: "/picture/get_data/",
+        datatype: "json",
+        type: "get",
+        success: function (data) {
+            // 在后端响应数据后重新指定表格参数
+            console.log(data);
+            console.log(typeof data);
+            console.log(data.data.x);
+            myChart.setOption({
+                xAxis: {
+                    data: data.data.x,
+                },
+                series: [{
+                    name: '半年注册趋势',
+                    type: 'line',
+                    data: data.data.y,
+                }]
+            });
+        }
+    })
+
+</script>
+</div>

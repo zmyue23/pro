@@ -1,0 +1,176 @@
+<script>
+    $(function () {
+        $("#userTable").jqGrid({
+            url: "/user/get_user/",
+            datatype: 'json',
+            styleUI: "Bootstrap",
+            autowidth: true,
+            pager: "#bannerPagerNew",
+            rowNum: 2,
+            rowList: [2, 5, 10],
+            viewrecords: true,
+            cellEdit: true,
+            editurl: '/user/edit_user/',
+            colNames: ["ID", "用户名", "法名", "地区", "是否禁用", "注册时间", "操作"],
+            colModel: [
+                {name: "id", align: "center", width: 50},
+                {name: "username", align: "center", editable: true},
+                {name: "nickname", align: "center", editable: true},
+                {name: "address", align: "center", editable: true},
+                {
+                    name: "status", align: "center", editable: true,
+                    edittype: "select", editoptions: {
+                        value: "0:禁用;1:不禁用",
+                    }
+                },
+                {name: "register_time", align: "center", width: 300},
+                {
+                    name: 'option', align: 'center', width: 439,
+                    formatter: function (cellValue, options, row) {
+                        return "<button class=\"btn btn-warning\" id=\"edit\" onclick=\"edit(" + row.id + ")\"><span class=\"glyphicon glyphicon-edit\"></span> 修改</button> " +
+                        "<button class=\"btn btn-danger\" id=\"edit\" onclick=\"del(" + row.id + ")\"><span class=\"glyphicon glyphicon-edit\"></span> 删除</button>"
+                    }
+                }
+            ],
+        });
+
+        $("#save").click(function () {
+            var username = $("#upload_username").val();
+            var nickname = $("#upload_nickname").val();
+            var address = $("#upload_address").val();
+            var status = $("#upload_status").val();
+            var gender = $("#upload_gender").val();
+
+            var formData = new FormData();
+            formData.append("username", username);
+            formData.append("nickname", nickname);
+            formData.append("address", address);
+            formData.append("status", status);
+            formData.append("gender", gender);
+
+            $.ajax({
+                url: "/user/add_user/",
+                type: "post",
+                data: formData,
+                processData: false,
+                contentType: false,
+                success: function (data) {
+                    console.log(data);
+                    // 判断添加是否成功  成功则刷新表格
+                    $('#bannerModal').modal('hide');
+                    $('#userTable').trigger("reloadGrid");
+                    if (data = "success") {
+                        // 刷新表格
+                        $("#userTable").trigger("reloadGrid");
+                    }
+                }
+            });
+        })
+    });
+
+    function edit(row_id) {
+        $("#userTable").jqGrid('editGridRow', row_id, {
+            height: 300,
+            reloadAfterSubmit: true,
+
+        })
+    }
+
+    function del(row_id) {
+        $("#userTable").jqGrid('delGridRow', row_id, {
+            reloadAfterSubmit: true
+        })
+    }
+</script>
+
+<div class="page-header">
+    <h2>轮播图管理</h2>
+</div>
+<ul class="nav nav-tabs ">
+    <li class="active"><a href="#"><b>轮播图信息</b></a></li>
+</ul>
+
+<div class="panel panel-default" style="padding: 40px">
+    <!-- jqgrid表格的容器 -->
+    <table id="userTable"></table>
+    <div class="alert alert-success" role="alert" id="addBannerMsg" style="display: none">
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span
+                aria-hidden="true">&times;</span></button>
+        <strong id="msgShow"></strong>
+    </div>
+    <div id="bannerPagerNew" style="width: auto;height: 50px"></div>
+    <button class="btn btn-primary" data-aa="@456" data-whatever="@123" id="btn" data-toggle="modal"
+            data-target="#bannerModal">添加
+    </button>
+</div>
+<body>
+<div class="modal fade" id="bannerModal">
+    <div class="modal-dialog">
+        <div class="modal-content" style="width:750px">
+            <!--模态框标题-->
+            <div class="modal-header">
+                <!--
+                    用来关闭模态框的属性:data-dismiss="modal"
+                -->
+                <button type="button" class="close" data-dismiss="modal"><span>&times;</span></button>
+                <h4 class="modal-title">编辑用户信息</h4>
+            </div>
+
+            <!--模态框内容体-->
+            <div class="modal-body">
+                <!--模态框内容体-->
+                <form action="" id="userForm">
+                    <div class="modal-body form-horizontal">
+                        <div class="form-group ">
+                            <label class="col-sm-2 control-label">用户名：</label>
+                            <div class="col-sm-10">
+                                <input type="text" name="upload_username" id="upload_username" class="form-control"
+                                       placeholder="请输入用户名">
+                            </div>
+                        </div>
+                        <div class="form-group ">
+                            <label class="col-sm-2 control-label">法名：</label>
+                            <div class="col-sm-10">
+                                <input type="text" name="upload_nickname" id="upload_nickname" class="form-control"
+                                       placeholder="请输入用户名">
+                            </div>
+                        </div>
+                        <div class="form-group ">
+                            <label class="col-sm-2 control-label">地区：</label>
+                            <div class="col-sm-10">
+                                <input type="text" name="upload_address" id="upload_address" class="form-control"
+                                       placeholder="请输入用户名">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">状态：</label>
+                            <div class="col-sm-10">
+                                <select name="upload_status" id="upload_status"
+                                        class="selectpicker show-tick form-control">
+                                    <option value="1">不禁用</option>
+                                    <option value="0">禁用</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">性别：</label>
+                            <div class="col-sm-10">
+                                <select name="upload_gender" id="upload_gender"
+                                        class="selectpicker show-tick form-control">
+                                    <option value="1">男</option>
+                                    <option value="0">女</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <!--模态页脚-->
+            <div class="modal-footer" id="modal_footer">
+                <button type="button" class="btn btn-primary" id="save">保存</button>
+                <button type="button" class="btn btn-warning" data-dismiss="modal">取消</button>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
