@@ -138,3 +138,7 @@ STATICFILES_DIRS = (os.path.join(BASE_DIR, "static/"),)
 # API_KEY = "40d6180426417bfc57d0744a362dc108"  #老师的
 API_KEY = "722e7a6a7fdda0c07b55fc65f5ae17e3"  #自己的
 
+# 权限列表
+PERMISSION_LIST = "permission_url_list"
+# 菜单列表
+MENU_LIST = "menu_list"
